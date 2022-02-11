@@ -1,0 +1,64 @@
+body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+}
+
+.content {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    /* max-width: 1080px;
+    max-height: 1080px; */
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 512px;
+    height: 512px;
+    margin: auto;
+}
+
+.goddess {
+    position: absolute;
+    max-width: 77%;
+}
+
+svg {
+    vertical-align: top;
+    width: 100%;
+    height: auto;
+    mix-blend-mode: multiply;
+    /* mix-blend-mode: multiply; */
+}
+.st1 {
+    fill: none;
+    stroke: #FF00FF;
+    stroke-miterlimit: 10;
+}
+.st2 {
+    fill: #FF00FF;
+}
+.st3 {
+    fill: none;
+    stroke: #00FFFF;
+    stroke-miterlimit: 10;
+}
+.st4 {
+    fill: #00FFFF;
+}
+.st5 {
+    fill: none;
+    stroke: #FFFF00;
+    stroke-miterlimit: 10;
+}
+.st6 {
+    fill: #FFFF00;
+}
