@@ -26,6 +26,23 @@ body {
     margin: auto;
 }
 
+.text-container {
+    width: 9%;
+    font-family: "Courier New", monospace;
+    font-size: 3vw;
+    margin-top: 47%;
+    transform: rotate(40deg);
+}
+
+ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+li {
+    display: inline;
+}
+
 .goddess {
     position: absolute;
     max-width: 77%;
@@ -38,7 +55,7 @@ svg {
     mix-blend-mode: multiply;
     /* mix-blend-mode: multiply; */
 }
-.st1 {
+/* .st1 {
     fill: none;
     stroke: #FF00FF;
     stroke-miterlimit: 10;
@@ -61,4 +78,16 @@ svg {
 }
 .st6 {
     fill: #FFFF00;
+} */
+@media screen and (min-width: 512px) {
+    .text-container {
+        font-size: 17px;
+        margin-top: 47vw;
+    }
 }
+ @media screen and (min-width: calc(512px / 0.77)) {
+     .text-container {
+         font-size: 18px;
+         margin-top: 59%;
+     }
+ }
