@@ -232,24 +232,27 @@ function hsl(hue) {
     return `hsl(${hue}deg, 100%, 50%, 33%)`;
 }
 
-let letterAnimationStarted = false;
-let letters = Array.from(nodeLetters)
+// Анимация росписи.
 
-function letterAnimation() {
-    function timing (i) {
-        // return 777 * Math.sqrt(i);
-        return 333 * Math.pow(i, 1/3)
-    }
-    nodeLetters.forEach(function (letter, i = 1) {
+let lettersStarted = false;
+const rabota1 = ['R', 'a', 'b', 'o', 't', 'a', '1', '!']
+let letters = false;
+
+let inverted = Boolean(Math.round(Math.random()));
+
+function timing(i) {
+    return 777 * Math.pow((i + 1), 1 / 3);
+}
+
+function rabota1Ani(value) {
+    nodeLetters.forEach(function (letter, i = 0) {
         setTimeout(function () {
+            if (value) letter.innerHTML = '*';
+            else letter.innerHTML = rabota1[i];
             i++;
-            console.log(`i: ${i} ${timing(i)}`);
-            letter.innerHTML = '*';
         }, timing(i));
     });
-
 }
-letterAnimation();
 
 function randomHue() {
     let output = [];
@@ -282,6 +285,11 @@ class Layer {
         }
     }
     move() {
+        if (!lettersStarted && layers.length > 1) {
+            rabota1Ani(1);
+            lettersStarted = !lettersStarted;
+        }
+
         this.deltaX = this.zeroX - currentX;
         this.deltaY = this.zeroY - currentY;
 
@@ -316,6 +324,10 @@ class Layer {
                         if (!this.shifted) {
                             this.shifted = !this.shifted;
                             layers.shift();
+                            if (lettersStarted && layers.length == 1) {
+                                rabota1Ani();
+                                lettersStarted = false;
+                            }
                         }
                     }
                 }, 7);
