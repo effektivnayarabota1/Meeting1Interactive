@@ -236,22 +236,57 @@ function hsl(hue) {
 
 let lettersStarted = false;
 const rabota1 = ['R', 'a', 'b', 'o', 't', 'a', '1', '!']
-let letters = false;
-
-let inverted = Boolean(Math.round(Math.random()));
 
 function timing(i) {
-    return 777 * Math.pow((i + 1), 1 / 3);
+    return 333 * Math.pow((i + 1), 1 / 3);
 }
 
 function rabota1Ani(value) {
-    nodeLetters.forEach(function (letter, i = 0) {
-        setTimeout(function () {
-            if (value) letter.innerHTML = '*';
-            else letter.innerHTML = rabota1[i];
+    nodeLetters.forEach((letter, i = 0) => {
+        setTimeout(() => {
+            if (value) {
+                // letter.innerHTML = '*';
+                // shadowAnimation(letter);
+
+                letter.innerHTML = rabota1[i];
+                shadowAnimation(letter);
+            } else {
+                // letter.innerHTML = rabota1[i];
+                // shadowAnimation(letter, -1);
+
+                letter.innerHTML = '*';
+                shadowAnimation(letter, -1);
+            }
             i++;
         }, timing(i));
     });
+}
+
+
+function shadowAnimation(letter, direction) {
+    if (!direction) {
+        let shadow = 0;
+        let createShadowInterval = setInterval(() => {
+            shadow = shadow + 0.1;
+            // letter.style.textShadow = `${shadow}px ${shadow}px red`;
+            letter.style.margin = `-${shadow}px ${shadow}px ${shadow}px -${shadow}px`;
+            letter.style.textShadow = `${shadow}px ${shadow}px 0 grey`;
+            if (shadow >= 1.7) clearInterval(createShadowInterval);
+        }, 3);
+    } else {
+        let shadow = 1.7;
+        let deleteShadowInterval = setInterval(() => {
+            shadow = shadow - 0.1;
+            letter.style.margin = `-${shadow}px ${shadow}px ${shadow}px -${shadow}px`;
+            letter.style.textShadow = `${shadow}px ${shadow}px 0 grey`;
+            if (shadow <= 0) {
+                clearInterval(deleteShadowInterval);
+                letter.style.margin = `0px 0px 0px 0px`;
+                letter.style.textShadow = `none`;
+            };
+        }, 3);
+    }
+
 }
 
 function randomHue() {
@@ -285,14 +320,24 @@ class Layer {
         }
     }
     move() {
-        if (!lettersStarted && layers.length > 1) {
+        console.log(layers);
+        if (!lettersStarted && this.sumDelta >= maxDelta) {
             rabota1Ani(1);
             lettersStarted = !lettersStarted;
         }
 
         this.deltaX = this.zeroX - currentX;
         this.deltaY = this.zeroY - currentY;
+        this.sumDelta = Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2)
 
+        // Удаление слоя при бездействии.
+        if (this.deltaX != 0 || this.deltaY != 0) {
+            this.inactiveTimeout = setTimeout(() => {
+                this.delete();
+            }, 777);
+        }
+
+        // Управление положением слоя.
         if (this.deltaX >= 0) {
             this[this.colors[0]].style.marginRight = -this.deltaX / sensivity + 'px';
             this[this.colors[2]].style.marginLeft = -this.deltaX / sensivity + 'px';
@@ -308,9 +353,11 @@ class Layer {
             this[this.colors[2]].style.marginBottom = this.deltaY / sensivity + 'px';
         }
 
-        if (Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2) >= maxDelta) this.delete();
+        // Удалине слоя при превышении дельты.
+        if (this.sumDelta >= maxDelta) this.delete();
     }
     delete() {
+        clearTimeout(this.inactiveTimeout);
         if (!this.removeStart) {
             createNewLayer();
             this.removeStart = !this.removeStart;
@@ -325,8 +372,10 @@ class Layer {
                             this.shifted = !this.shifted;
                             layers.shift();
                             if (lettersStarted && layers.length == 1) {
-                                rabota1Ani();
-                                lettersStarted = false;
+                                setTimeout(() => {
+                                    rabota1Ani();
+                                    lettersStarted = false;
+                                }, 333)
                             }
                         }
                     }
