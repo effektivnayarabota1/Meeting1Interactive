@@ -357,16 +357,23 @@ class Layer {
             if (this.deltaX >= 0) {
                 this[this.colors[0]].style.marginRight = -this.deltaX / sensivity + 'px';
                 this[this.colors[2]].style.marginLeft = -this.deltaX / sensivity + 'px';
+                this[this.colors[1]].style.marginLeft = -this.deltaX / sensivity + 'px';
             } else if (this.deltaX < 0) {
                 this[this.colors[0]].style.marginLeft = this.deltaX / sensivity + 'px';
                 this[this.colors[2]].style.marginRight = this.deltaX / sensivity + 'px';
+                this[this.colors[1]].style.marginRight = this.deltaX / sensivity + 'px';
+
             }
             if (this.deltaY >= 0) {
                 this[this.colors[0]].style.marginBottom = -this.deltaY / sensivity + 'px';
                 this[this.colors[2]].style.marginTop = -this.deltaY / sensivity + 'px';
+                this[this.colors[1]].style.marginTop = -this.deltaY / sensivity + 'px';
+
             } else if (this.deltaY < 0) {
                 this[this.colors[0]].style.marginTop = this.deltaY / sensivity + 'px';
                 this[this.colors[2]].style.marginBottom = this.deltaY / sensivity + 'px';
+                this[this.colors[1]].style.marginBottom = this.deltaY / sensivity + 'px';
+
             }
         }
 
