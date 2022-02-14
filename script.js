@@ -5,6 +5,7 @@ const nodeLetters = document.querySelectorAll('.letter');
 
 const maxDelta = container.offsetWidth * 0.048828125 / 3;
 const sensivity = 1;
+const mousSensivity = Math.round(window.innerWidth * 0.00572);
 ``
 let layers = [];
 
@@ -343,7 +344,6 @@ class Layer {
                 this.delete();
                 if (state == 'letters') {
                     dotsToLetters('dots');
-                    console.log('dots');
                 }
             }
         }, 333);
@@ -353,7 +353,7 @@ class Layer {
         this.deltaY = this.zeroY - currentY;
         this.sumDelta = Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2)
 
-        if (this.sumDelta < (maxDelta * 7)) {
+        if (this.sumDelta < (maxDelta * 7) || true) {
             if (this.deltaX >= 0) {
                 this[this.colors[0]].style.marginRight = -this.deltaX / sensivity + 'px';
                 this[this.colors[2]].style.marginLeft = -this.deltaX / sensivity + 'px';
@@ -374,7 +374,6 @@ class Layer {
         if (this.sumDelta >= maxDelta) {
             this.delete();
             if (state == 'dots') {
-                console.log('letters');
                 dotsToLetters('letters');
             }
         }
@@ -410,9 +409,9 @@ function createNewLayer() {
 }
 
 function setZeroPoints(event) {
-    if (event.gamma) {
-        currentX = event.gamma;
-        currentY = event.beta;
+    if (event.gamma || event.beta) {
+        currentX = Math.abs(event.gamma);
+        currentY = Math.abs(event.beta);
         window.removeEventListener('deviceorientation', setZeroPoints);
     } else {
         currentX = event.clientX;
@@ -423,13 +422,16 @@ function setZeroPoints(event) {
 
 layers = [new Layer];
 
+console.log(mousSensivity)
+
 function handleOrientation(event) {
-    if (event.gamma) {
-        currentX = event.gamma;
-        currentY = event.beta;
+    if (event.gamma || event.beta) {
+        currentX = Math.abs(event.gamma);
+        currentY = Math.abs(event.beta - 90);
+
     } else {
-        currentX = event.clientX / 11;
-        currentY = event.clientY / 11;
+        currentX = event.clientX / mousSensivity;
+        currentY = event.clientY / mousSensivity;
     }
 
     for (let layer of layers) {
