@@ -3,12 +3,8 @@ const container = document.querySelector('.img-container');
 
 const nodeLetters = document.querySelectorAll('.letter');
 
-// 33 Должна зависеть от ширины экрана.
 const maxDelta = container.offsetWidth * 0.048828125 / 3;
 const sensivity = 1;
-
-// const maxDelta = 50;
-// const sensivity = 0.01;
 ``
 let layers = [];
 
@@ -18,6 +14,7 @@ let zeroY = 0;
 let currentX = 0;
 let currentY = 0;
 
+// Создание вектора.
 function createVector(color) {
     return (
         `
@@ -232,9 +229,18 @@ function hsl(hue) {
     return `hsl(${hue}deg, 100%, 50%, 33%)`;
 }
 
-// Анимация росписи.
+function randomHue() {
+    let output = [];
+    let mainColor = Math.random() * 360;
+    let zeroColor = mainColor - 120;
+    if (zeroColor < 0) zeroColor = zeroColor + 360;
+    let secondColor = mainColor + 120;
+    if (secondColor > 360) secondColor = secondColor - 360;
+    return output = [zeroColor, mainColor, secondColor];
+}
 
-let lettersStarted = false;
+// Анимация росписи.
+let textContent = 'dots';
 const rabota1 = ['R', 'a', 'b', 'o', 't', 'a', '1', '!']
 
 function timing(i) {
@@ -244,33 +250,26 @@ function timing(i) {
 function rabota1Ani(value) {
     nodeLetters.forEach((letter, i = 0) => {
         setTimeout(() => {
-            if (value) {
-                // letter.innerHTML = '*';
-                // shadowAnimation(letter);
-
+            if (value == 'letters') {
                 letter.innerHTML = rabota1[i];
-                shadowAnimation(letter);
-            } else {
-                // letter.innerHTML = rabota1[i];
-                // shadowAnimation(letter, -1);
-
+                textStyleAnimation(letter);
+            } else if (value == 'dots') {
                 letter.innerHTML = '*';
-                shadowAnimation(letter, -1);
+                textStyleAnimation(letter, -1);
             }
             i++;
         }, timing(i));
     });
 }
 
-
-function shadowAnimation(letter, direction) {
+function textStyleAnimation(letter, direction) {
     if (!direction) {
         let shadow = 0;
         let createShadowInterval = setInterval(() => {
             shadow = shadow + 0.1;
             // letter.style.textShadow = `${shadow}px ${shadow}px red`;
             letter.style.margin = `-${shadow}px ${shadow}px ${shadow}px -${shadow}px`;
-            letter.style.textShadow = `${shadow}px ${shadow}px 0 grey`;
+            letter.style.textShadow = `${shadow}px ${shadow}px 1px rgba(0, 0, 0, 33%)`;
             if (shadow >= 1.7) clearInterval(createShadowInterval);
         }, 3);
     } else {
@@ -278,7 +277,7 @@ function shadowAnimation(letter, direction) {
         let deleteShadowInterval = setInterval(() => {
             shadow = shadow - 0.1;
             letter.style.margin = `-${shadow}px ${shadow}px ${shadow}px -${shadow}px`;
-            letter.style.textShadow = `${shadow}px ${shadow}px 0 grey`;
+            letter.style.textShadow = `${shadow}px ${shadow}px 0 rgba(0, 0, 0, 33%)`;
             if (shadow <= 0) {
                 clearInterval(deleteShadowInterval);
                 letter.style.margin = `0px 0px 0px 0px`;
@@ -289,14 +288,17 @@ function shadowAnimation(letter, direction) {
 
 }
 
-function randomHue() {
-    let output = [];
-    let mainColor = Math.random() * 360;
-    let zeroColor = mainColor - 120;
-    if (zeroColor < 0) zeroColor = zeroColor + 360;
-    let secondColor = mainColor + 120;
-    if (secondColor > 360) secondColor = secondColor - 360;
-    return output = [zeroColor, mainColor, secondColor];
+//Смена букв.
+let state = 'dots';
+
+function dotsToLetters(value) {
+    if (value == 'letters') {
+        rabota1Ani(value);
+        state = 'letters';
+    } else if (value == 'dots') {
+        rabota1Ani(value);
+        state = 'dots';
+    }
 }
 
 class Layer {
@@ -309,8 +311,7 @@ class Layer {
         this.removeStart = false;
         this.shifted = false;
 
-        // TODO Сделать генерацию по цветам.
-
+        //Создание трех векторов с рандомным цветом.
         this.colors = randomHue();
         for (let color of this.colors) {
             this[color] = document.createElement('div');
@@ -320,47 +321,69 @@ class Layer {
         }
     }
     move() {
-        console.log(layers);
-        if (!lettersStarted && this.sumDelta >= maxDelta) {
-            rabota1Ani(1);
-            lettersStarted = !lettersStarted;
-        }
+        // if (state == 'active' && this.sumDelta != 0 && this.sumDelta > (maxDelta / 3)) {
+        //     console.log('active');
+        //     state = 'movement';
+        //     dotsToLetters();
+        // }
 
+        // if (textContent == 'dots' && this.sumDelta >= maxDelta) {
+        //     rabota1Ani('letters');
+        //     textContent = 'dots';
+        // }
+
+        // if (textContent == 'letters') {
+        //     rabota1Ani('dots');
+        //     textContent = 'letters';
+        // }
+
+        //Удаление слоя при бездействии.
+        this.inactiveDelete = setTimeout(() => {
+            if (!this.removeStart && this.sumDelta != 0 && this.sumDelta > (maxDelta / 3)) {
+                this.delete();
+                if (state == 'letters') {
+                    dotsToLetters('dots');
+                    console.log('dots');
+                }
+            }
+        }, 333);
+
+        // Управление положением слоя.
         this.deltaX = this.zeroX - currentX;
         this.deltaY = this.zeroY - currentY;
         this.sumDelta = Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2)
 
-        // Удаление слоя при бездействии.
-        if (this.deltaX != 0 || this.deltaY != 0) {
-            this.inactiveTimeout = setTimeout(() => {
-                this.delete();
-            }, 777);
-        }
-
-        // Управление положением слоя.
-        if (this.deltaX >= 0) {
-            this[this.colors[0]].style.marginRight = -this.deltaX / sensivity + 'px';
-            this[this.colors[2]].style.marginLeft = -this.deltaX / sensivity + 'px';
-        } else if (this.deltaX < 0) {
-            this[this.colors[0]].style.marginLeft = this.deltaX / sensivity + 'px';
-            this[this.colors[2]].style.marginRight = this.deltaX / sensivity + 'px';
-        }
-        if (this.deltaY >= 0) {
-            this[this.colors[0]].style.marginBottom = -this.deltaY / sensivity + 'px';
-            this[this.colors[2]].style.marginTop = -this.deltaY / sensivity + 'px';
-        } else if (this.deltaY < 0) {
-            this[this.colors[0]].style.marginTop = this.deltaY / sensivity + 'px';
-            this[this.colors[2]].style.marginBottom = this.deltaY / sensivity + 'px';
+        if (this.sumDelta < (maxDelta * 7)) {
+            if (this.deltaX >= 0) {
+                this[this.colors[0]].style.marginRight = -this.deltaX / sensivity + 'px';
+                this[this.colors[2]].style.marginLeft = -this.deltaX / sensivity + 'px';
+            } else if (this.deltaX < 0) {
+                this[this.colors[0]].style.marginLeft = this.deltaX / sensivity + 'px';
+                this[this.colors[2]].style.marginRight = this.deltaX / sensivity + 'px';
+            }
+            if (this.deltaY >= 0) {
+                this[this.colors[0]].style.marginBottom = -this.deltaY / sensivity + 'px';
+                this[this.colors[2]].style.marginTop = -this.deltaY / sensivity + 'px';
+            } else if (this.deltaY < 0) {
+                this[this.colors[0]].style.marginTop = this.deltaY / sensivity + 'px';
+                this[this.colors[2]].style.marginBottom = this.deltaY / sensivity + 'px';
+            }
         }
 
         // Удалине слоя при превышении дельты.
-        if (this.sumDelta >= maxDelta) this.delete();
+        if (this.sumDelta >= maxDelta) {
+            this.delete();
+            if (state == 'dots') {
+                console.log('letters');
+                dotsToLetters('letters');
+            }
+        }
     }
     delete() {
-        clearTimeout(this.inactiveTimeout);
-        if (!this.removeStart) {
+        clearTimeout(this.inactiveDelete);
+        if (!this.removeStart && layers.length < 7) {
             createNewLayer();
-            this.removeStart = !this.removeStart;
+            this.removeStart = true;
             for (let color of this.colors) {
                 let opacityAnimation = setInterval(() => {
                     this[color].style.opacity = this.opacity + '%';
@@ -371,16 +394,13 @@ class Layer {
                         if (!this.shifted) {
                             this.shifted = !this.shifted;
                             layers.shift();
-                            if (lettersStarted && layers.length == 1) {
-                                setTimeout(() => {
-                                    rabota1Ani();
-                                    lettersStarted = false;
-                                }, 333)
-                            }
                         }
                     }
                 }, 7);
             }
+            setTimeout(() => {
+                if (layers.length <= 1 && state == 'letters') dotsToLetters('dots');
+            }, 777)
         }
     }
 }
@@ -390,23 +410,35 @@ function createNewLayer() {
 }
 
 function setZeroPoints(event) {
-    zeroX = event.gamma;
-    zeroY = event.beta;
-    window.removeEventListener('deviceorientation', setZeroPoints);
+    if (event.gamma) {
+        currentX = event.gamma;
+        currentY = event.beta;
+        window.removeEventListener('deviceorientation', setZeroPoints);
+    } else {
+        currentX = event.clientX;
+        currentY = event.clientY;
+        window.addEventListener('mousemove', setZeroPoints);
+    }
 }
 
 layers = [new Layer];
 
 function handleOrientation(event) {
-    currentX = event.gamma;
-    currentY = event.beta;
+    if (event.gamma) {
+        currentX = event.gamma;
+        currentY = event.beta;
+    } else {
+        currentX = event.clientX / 11;
+        currentY = event.clientY / 11;
+    }
 
     for (let layer of layers) {
-        layer.move(currentX, currentY);
+        layer.move();
     }
 }
 
-if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', setZeroPoints);
-    window.addEventListener('deviceorientation', handleOrientation);
-}
+window.addEventListener('mousemove', setZeroPoints);
+window.addEventListener('mousemove', handleOrientation);
+
+window.addEventListener('deviceorientation', setZeroPoints);
+window.addEventListener('deviceorientation', handleOrientation);
