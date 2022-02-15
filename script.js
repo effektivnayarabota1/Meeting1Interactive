@@ -4,7 +4,7 @@ const container = document.querySelector('.img-container');
 const nodeLetters = document.querySelectorAll('.letter');
 
 const maxDelta = container.offsetWidth * 0.048828125 / 3;
-// const maxDelta = 33;
+// const maxDelta = 177;
 const sensivity = 1;
 const mouseSensivity = Math.round(window.innerWidth * 0.00572);
 ``
@@ -228,12 +228,15 @@ function createVector(color) {
 }
 
 function hsl(hue) {
-    return `hsl(${hue}deg, 100%, 50%, 33%)`;
+    return `hsl(${hue}deg, 100%, 87%, 100%)`;
 }
 
 function randomHue() {
     let output = [];
-    let mainColor = Math.random() * 360;
+    // let mainColor = Math.random() * 360;
+    let mainColor = 337 + Math.random() * 47;
+    if (mainColor >= 360) mainColor = mainColor - 360;
+
     let zeroColor = mainColor - 120;
     if (zeroColor < 0) zeroColor = zeroColor + 360;
     let secondColor = mainColor + 120;
@@ -311,7 +314,7 @@ function setMargin(obj, layer, direction) {
         else obj[obj.colors[layer]].style.marginLeft = obj[amount + layer] + 'px';
     } else if (direction == 'vertical') {
         amount = 'y';
-        if (obj[amount + layer] >= 0) obj[obj.colors[layer]].style.marginTop = -obj[amount + layer] + 'px';
+        if (obj[amount + layer] >= 0) obj[obj.colors[layer]].style['marginTop'] = -obj[amount + layer] + 'px';
         else obj[obj.colors[layer]].style.marginBottom = obj[amount + layer] + 'px';
     }
 
@@ -361,66 +364,37 @@ class Layer {
         // Управление положением слоя.
         this.deltaX = currentX - this.zeroX;
         this.deltaY = -(currentY - this.zeroY);
-        this.sumDelta = Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2)
+        this.sumDelta = Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2);
+        this.atan = Math.atan2(this.deltaY, this.deltaX);
 
         if (this.sumDelta < (maxDelta * 7)) {
-            this.cosAlpha0 = Math.cos(Math.atan2(this.deltaY, this.deltaX));
-            this.sinAlpha0 = Math.sin(Math.atan2(this.deltaY, this.deltaX));
+            this.cosAlpha0 = Math.cos(this.atan);
+            this.sinAlpha0 = Math.sin(this.atan);
 
-            this.cosAlpha1 = Math.cos(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 4 / 3);
-            this.sinAlpha1 = Math.sin(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 4 / 3);
+            this.cosAlpha1 = Math.cos(this.atan + Math.PI * 4 / 3);
+            this.sinAlpha1 = Math.sin(this.atan + Math.PI * 4 / 3);
 
-            this.cosAlpha2 = Math.cos(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 2 / 3);
-            this.sinAlpha2 = Math.sin(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 2 / 3);
+            this.cosAlpha2 = Math.cos(this.atan + Math.PI * 2 / 3);
+            this.sinAlpha2 = Math.sin(this.atan + Math.PI * 2 / 3);
 
-            // this.x0 = Math.abs(this.x0 + this.deltaX) * this.cosAlpha0;
-            this.x0 = Math.abs(this.deltaX) * this.cosAlpha0 + Math.abs(this.deltaY) * this.cosAlpha0;
-            this.y0 = Math.abs(this.deltaY) * this.sinAlpha0 + Math.abs(this.deltaX) * this.cosAlpha0;
+            this.x0 = this.sumDelta * this.cosAlpha0;
+            this.y0 = this.sumDelta * this.sinAlpha0;
 
-            this.x1 = Math.abs(this.deltaX) * this.cosAlpha1 + Math.abs(this.deltaY) * this.cosAlpha1;
-            this.y1 = Math.abs(this.deltaY) * this.sinAlpha1 + Math.abs(this.deltaX) * this.sinAlpha1;
+            this.x1 = this.sumDelta * this.cosAlpha1;
+            this.y1 = this.sumDelta * this.sinAlpha1;
 
-            this.x2 = Math.abs(this.deltaX) * this.cosAlpha2 + Math.abs(this.deltaY) * this.cosAlpha2;
-            this.y2 = Math.abs(this.deltaY) * this.sinAlpha2 + Math.abs(this.deltaX) * this.sinAlpha2;
+            this.x2 = this.sumDelta * this.cosAlpha2;
+            this.y2 = this.sumDelta * this.sinAlpha2;
 
 
             setMargin(this, 0, 'horizontal');
-            // setMargin(this, 0, 'vertical');
+            setMargin(this, 0, 'vertical');
 
             setMargin(this, 1, 'horizontal');
             setMargin(this, 1, 'vertical');
 
             setMargin(this, 2, 'horizontal');
             setMargin(this, 2, 'vertical');
-
-            // if (this.deltaX >= 0) {
-            //     this.x1 = this.x1 + Math.cos(Math.PI / 3) * this.deltaX;
-            //     this.y1 = this.y1 + Math.sin(Math.PI / 3) * this.deltaX;
-
-            //     this.x2 = this.x2 + Math.cos(Math.PI / 3) * this.deltaX;
-            //     this.y2 = this.y2 + Math.sin(Math.PI / 3) * this.deltaX;
-
-            // } else if (this.deltaX < 0) {
-            //     this.x1 = this.x1 + Math.cos(Math.PI / 3) * this.deltaX;
-            //     this.y1 = this.y1 + Math.sin(Math.PI / 3) * this.deltaX;
-
-            //     this.x2 = this.x2 + Math.cos(Math.PI / 3) * this.deltaX;
-            //     this.y2 = this.y2 - Math.sin(Math.PI / 3) * this.deltaX;
-
-            // }
-            // if (this.deltaY >= 0) {
-            //     this.x1 = this.x1 + Math.sin(Math.PI / 3) * this.deltaY;
-            //     this.y1 = this.y1 - Math.cos(Math.PI / 3) * this.deltaY;
-
-            //     this.x2 = this.x2 - Math.sin(Math.PI / 3) * this.deltaY;
-            //     this.y2 = this.y2 - Math.cos(Math.PI / 3) * this.deltaY;
-            // } else if (this.deltaY < 0) {
-            //     this.x1 = this.x1 - Math.sin(Math.PI / 3) * this.deltaY;
-            //     this.y1 = this.y1 + Math.cos(Math.PI / 3) * this.deltaY;
-
-            //     this.x2 = this.x2 + Math.sin(Math.PI / 3) * this.deltaY;
-            //     this.y2 = this.y2 - Math.cos(Math.PI / 3) * this.deltaY;
-            // }
         }
 
         // Удалине слоя при превышении дельты.
@@ -433,7 +407,7 @@ class Layer {
     }
     delete() {
         clearTimeout(this.inactiveDelete);
-        if (!this.removeStart && layers.length < 3) {
+        if (!this.removeStart && layers.length <= 3) {
             createNewLayer();
             this.removeStart = true;
             for (let color of this.colors) {

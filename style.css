@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 
 body {
     width: 100%;
@@ -30,7 +30,7 @@ body {
 
 .text-container {
     width: 9%;
-    font-family: 'Ubuntu Mono', "Courier New", monospace;
+    font-family: 'Roboto Mono', "Courier New", monospace;
     font-size: 3vw;
     color: #1c1c1c;
     margin-top: 47%;
@@ -57,8 +57,10 @@ svg {
     vertical-align: top;
     width: 100%;
     height: auto;
-    mix-blend-mode: multiply;
-    /* mix-blend-mode: multiply; */
+    mix-blend-mode: screen; 
+    /* mix-blend-mode: normal; */
+
+    /* isolation: isolate; */
 }
 
 /* .st1 {
