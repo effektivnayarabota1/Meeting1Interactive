@@ -4,9 +4,9 @@ const container = document.querySelector('.img-container');
 const nodeLetters = document.querySelectorAll('.letter');
 
 const maxDelta = container.offsetWidth * 0.048828125 / 3;
-// const maxDelta = 177;
 const sensivity = 1;
-const mouseSensivity = Math.round(window.innerWidth * 0.00572);
+// const mouseSensivity = Math.round(window.innerWidth * 0.00572);
+const mouseSensivity = 11;
 ``
 let layers = [];
 
@@ -320,13 +320,10 @@ let rabota1 = {
         this.cos2 = Math.cos(atan + Math.PI * 2 / 3);
         this.sin2 = Math.sin(atan + Math.PI * 2 / 3);
 
-        console.log(0.7 * this.currentShX);
-
         this.shadow0 = `${this.cos0 * this.currentShX}px ${this.sin0 * this.currentShX}px 0 rgba(255, 0, 0, ${0.33 * this.currentShX})`;
         this.shadow1 = `${this.cos1 * this.currentShX}px ${this.sin1 * this.currentShX}px 0 rgba(0, 255, 0, ${0.33 * this.currentShX})`;
         this.shadow2 = `${this.cos2 * this.currentShX}px ${this.sin2 * this.currentShX}px 0 rgba(0, 0, 255, ${0.33 * this.currentShX})`;
 
-        // console.log(`${this.shadow0}, ${this.shadow1}, ${this.shadow2}`);
         nodeLetters.forEach((letter) => {
             letter.style.textShadow = `${this.shadow0}, ${this.shadow1}, ${this.shadow2}`;
         })
@@ -346,20 +343,6 @@ let rabota1 = {
 
 function timing(i) {
     return 333 * Math.pow((i + 1), 1 / 3);
-}
-
-// TODO Перепиши эту функцию. делается проще
-function setMargin(obj, layer, direction) {
-    let amount;
-    if (direction == 'horizontal') {
-        amount = 'x';
-        if (obj[amount + layer] >= 0) obj[obj.colors[layer]].style.marginRight = -obj[amount + layer] + 'px';
-        else obj[obj.colors[layer]].style.marginLeft = obj[amount + layer] + 'px';
-    } else if (direction == 'vertical') {
-        amount = 'y';
-        if (obj[amount + layer] >= 0) obj[obj.colors[layer]].style['marginTop'] = -obj[amount + layer] + 'px';
-        else obj[obj.colors[layer]].style.marginBottom = obj[amount + layer] + 'px';
-    }
 }
 
 class Layer {
@@ -414,15 +397,7 @@ class Layer {
             this.x2 = this.sumDelta * this.cosAlpha2;
             this.y2 = this.sumDelta * this.sinAlpha2;
 
-
-            setMargin(this, 0, 'horizontal');
-            setMargin(this, 0, 'vertical');
-
-            setMargin(this, 1, 'horizontal');
-            setMargin(this, 1, 'vertical');
-
-            setMargin(this, 2, 'horizontal');
-            setMargin(this, 2, 'vertical');
+            this.setMargin();
         }
 
         // Удалине слоя при превышении дельты.
@@ -438,6 +413,15 @@ class Layer {
                 this.delete();
             }
         }, 333);
+    }
+    setMargin() {
+        this.layers = [0, 1, 2]
+        for (let layer of this.layers) {
+            if (this['x' + layer] >= 0) this[this.colors[layer]].style.marginRight = -this['x' + layer] + 'px';
+            else this[this.colors[layer]].style.marginLeft = this['x' + layer] + 'px';
+            if (this['y' + layer] >= 0) this[this.colors[layer]].style.marginTop = -this['y' + layer] + 'px';
+            else this[this.colors[layer]].style.marginBottom = this['y' + layer] + 'px';
+        }
     }
     delete() {
         clearTimeout(this.inactiveDelete);
@@ -481,8 +465,6 @@ function setZeroPoints(event) {
     }
 }
 
-layers = [new Layer];
-
 function handleOrientation(event) {
     if (event.gamma || event.beta) {
         currentX = Math.abs(event.gamma);
@@ -498,8 +480,12 @@ function handleOrientation(event) {
     }
 }
 
+layers = [new Layer];
+
 window.addEventListener('mousemove', setZeroPoints);
 window.addEventListener('mousemove', handleOrientation);
 
 window.addEventListener('deviceorientation', setZeroPoints);
 window.addEventListener('deviceorientation', handleOrientation);
+
+// Кирилл Иванов 16.02.2022 Москва.
