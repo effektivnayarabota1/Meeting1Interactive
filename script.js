@@ -4,8 +4,9 @@ const container = document.querySelector('.img-container');
 const nodeLetters = document.querySelectorAll('.letter');
 
 const maxDelta = container.offsetWidth * 0.048828125 / 3;
+// const maxDelta = 33;
 const sensivity = 1;
-const mousSensivity = Math.round(window.innerWidth * 0.00572);
+const mouseSensivity = Math.round(window.innerWidth * 0.00572);
 ``
 let layers = [];
 
@@ -302,10 +303,35 @@ function dotsToLetters(value) {
     }
 }
 
+function setMargin(obj, layer, direction) {
+    let amount;
+    if (direction == 'horizontal') {
+        amount = 'x';
+        if (obj[amount + layer] >= 0) obj[obj.colors[layer]].style.marginRight = -obj[amount + layer] + 'px';
+        else obj[obj.colors[layer]].style.marginLeft = obj[amount + layer] + 'px';
+    } else if (direction == 'vertical') {
+        amount = 'y';
+        if (obj[amount + layer] >= 0) obj[obj.colors[layer]].style.marginTop = -obj[amount + layer] + 'px';
+        else obj[obj.colors[layer]].style.marginBottom = obj[amount + layer] + 'px';
+    }
+
+    // if (direction == 'top') obj[obj.colors[layer]].style.marginTop = -Math.abs(obj[amount + layer]) + 'px';
+    // else if (direction == 'right') obj[obj.colors[layer]].style.marginRight = -Math.abs(obj[amount + layer]) + 'px';
+    // else if (direction == 'bottom') obj[obj.colors[layer]].style.marginBottom = -Math.abs(obj[amount + layer]) + 'px';
+    // else if (direction == 'left') obj[obj.colors[layer]].style.marginLeft = -Math.abs(obj[amount + layer]) + 'px';
+}
+
 class Layer {
     constructor() {
         this.zeroX = currentX;
         this.zeroY = currentY;
+
+        this.x0 = 0;
+        this.y0 = 0;
+        this.x1 = 0;
+        this.y1 = 0;
+        this.x2 = 0;
+        this.y2 = 0;
 
         this.opacity = 100;
 
@@ -322,22 +348,6 @@ class Layer {
         }
     }
     move() {
-        // if (state == 'active' && this.sumDelta != 0 && this.sumDelta > (maxDelta / 3)) {
-        //     console.log('active');
-        //     state = 'movement';
-        //     dotsToLetters();
-        // }
-
-        // if (textContent == 'dots' && this.sumDelta >= maxDelta) {
-        //     rabota1Ani('letters');
-        //     textContent = 'dots';
-        // }
-
-        // if (textContent == 'letters') {
-        //     rabota1Ani('dots');
-        //     textContent = 'letters';
-        // }
-
         //Удаление слоя при бездействии.
         this.inactiveDelete = setTimeout(() => {
             if (!this.removeStart && this.sumDelta != 0 && this.sumDelta > (maxDelta / 3)) {
@@ -349,32 +359,68 @@ class Layer {
         }, 333);
 
         // Управление положением слоя.
-        this.deltaX = this.zeroX - currentX;
-        this.deltaY = this.zeroY - currentY;
+        this.deltaX = currentX - this.zeroX;
+        this.deltaY = -(currentY - this.zeroY);
         this.sumDelta = Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2)
 
-        if (this.sumDelta < (maxDelta * 7) || true) {
-            if (this.deltaX >= 0) {
-                this[this.colors[0]].style.marginRight = -this.deltaX / sensivity + 'px';
-                this[this.colors[2]].style.marginLeft = -this.deltaX / sensivity + 'px';
-                this[this.colors[1]].style.marginLeft = -this.deltaX / sensivity + 'px';
-            } else if (this.deltaX < 0) {
-                this[this.colors[0]].style.marginLeft = this.deltaX / sensivity + 'px';
-                this[this.colors[2]].style.marginRight = this.deltaX / sensivity + 'px';
-                this[this.colors[1]].style.marginRight = this.deltaX / sensivity + 'px';
+        if (this.sumDelta < (maxDelta * 7)) {
+            this.cosAlpha0 = Math.cos(Math.atan2(this.deltaY, this.deltaX));
+            this.sinAlpha0 = Math.sin(Math.atan2(this.deltaY, this.deltaX));
 
-            }
-            if (this.deltaY >= 0) {
-                this[this.colors[0]].style.marginBottom = -this.deltaY / sensivity + 'px';
-                this[this.colors[2]].style.marginTop = -this.deltaY / sensivity + 'px';
-                this[this.colors[1]].style.marginTop = -this.deltaY / sensivity + 'px';
+            this.cosAlpha1 = Math.cos(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 4 / 3);
+            this.sinAlpha1 = Math.sin(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 4 / 3);
 
-            } else if (this.deltaY < 0) {
-                this[this.colors[0]].style.marginTop = this.deltaY / sensivity + 'px';
-                this[this.colors[2]].style.marginBottom = this.deltaY / sensivity + 'px';
-                this[this.colors[1]].style.marginBottom = this.deltaY / sensivity + 'px';
+            this.cosAlpha2 = Math.cos(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 2 / 3);
+            this.sinAlpha2 = Math.sin(Math.atan2(this.deltaY, this.deltaX) + Math.PI * 2 / 3);
 
-            }
+            // this.x0 = Math.abs(this.x0 + this.deltaX) * this.cosAlpha0;
+            this.x0 = Math.abs(this.deltaX) * this.cosAlpha0 + Math.abs(this.deltaY) * this.cosAlpha0;
+            this.y0 = Math.abs(this.deltaY) * this.sinAlpha0 + Math.abs(this.deltaX) * this.cosAlpha0;
+
+            this.x1 = Math.abs(this.deltaX) * this.cosAlpha1 + Math.abs(this.deltaY) * this.cosAlpha1;
+            this.y1 = Math.abs(this.deltaY) * this.sinAlpha1 + Math.abs(this.deltaX) * this.sinAlpha1;
+
+            this.x2 = Math.abs(this.deltaX) * this.cosAlpha2 + Math.abs(this.deltaY) * this.cosAlpha2;
+            this.y2 = Math.abs(this.deltaY) * this.sinAlpha2 + Math.abs(this.deltaX) * this.sinAlpha2;
+
+
+            setMargin(this, 0, 'horizontal');
+            // setMargin(this, 0, 'vertical');
+
+            setMargin(this, 1, 'horizontal');
+            setMargin(this, 1, 'vertical');
+
+            setMargin(this, 2, 'horizontal');
+            setMargin(this, 2, 'vertical');
+
+            // if (this.deltaX >= 0) {
+            //     this.x1 = this.x1 + Math.cos(Math.PI / 3) * this.deltaX;
+            //     this.y1 = this.y1 + Math.sin(Math.PI / 3) * this.deltaX;
+
+            //     this.x2 = this.x2 + Math.cos(Math.PI / 3) * this.deltaX;
+            //     this.y2 = this.y2 + Math.sin(Math.PI / 3) * this.deltaX;
+
+            // } else if (this.deltaX < 0) {
+            //     this.x1 = this.x1 + Math.cos(Math.PI / 3) * this.deltaX;
+            //     this.y1 = this.y1 + Math.sin(Math.PI / 3) * this.deltaX;
+
+            //     this.x2 = this.x2 + Math.cos(Math.PI / 3) * this.deltaX;
+            //     this.y2 = this.y2 - Math.sin(Math.PI / 3) * this.deltaX;
+
+            // }
+            // if (this.deltaY >= 0) {
+            //     this.x1 = this.x1 + Math.sin(Math.PI / 3) * this.deltaY;
+            //     this.y1 = this.y1 - Math.cos(Math.PI / 3) * this.deltaY;
+
+            //     this.x2 = this.x2 - Math.sin(Math.PI / 3) * this.deltaY;
+            //     this.y2 = this.y2 - Math.cos(Math.PI / 3) * this.deltaY;
+            // } else if (this.deltaY < 0) {
+            //     this.x1 = this.x1 - Math.sin(Math.PI / 3) * this.deltaY;
+            //     this.y1 = this.y1 + Math.cos(Math.PI / 3) * this.deltaY;
+
+            //     this.x2 = this.x2 + Math.sin(Math.PI / 3) * this.deltaY;
+            //     this.y2 = this.y2 - Math.cos(Math.PI / 3) * this.deltaY;
+            // }
         }
 
         // Удалине слоя при превышении дельты.
@@ -387,7 +433,7 @@ class Layer {
     }
     delete() {
         clearTimeout(this.inactiveDelete);
-        if (!this.removeStart && layers.length < 7) {
+        if (!this.removeStart && layers.length < 3) {
             createNewLayer();
             this.removeStart = true;
             for (let color of this.colors) {
@@ -429,16 +475,14 @@ function setZeroPoints(event) {
 
 layers = [new Layer];
 
-console.log(mousSensivity)
-
 function handleOrientation(event) {
     if (event.gamma || event.beta) {
         currentX = Math.abs(event.gamma);
         currentY = Math.abs(event.beta - 90);
 
     } else {
-        currentX = event.clientX / mousSensivity;
-        currentY = event.clientY / mousSensivity;
+        currentX = event.clientX / mouseSensivity;
+        currentY = event.clientY / mouseSensivity;
     }
 
     for (let layer of layers) {
