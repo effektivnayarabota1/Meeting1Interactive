@@ -245,67 +245,110 @@ function randomHue() {
 }
 
 // Анимация росписи.
-let textContent = 'dots';
-const rabota1 = ['R', 'a', 'b', 'o', 't', 'a', '1', '!']
+const rabota1Letters = ['R', 'a', 'b', 'o', 't', 'a', '1', '!'];
+const rabota1Dots = ['*', '*', '*', '*', '*', '*', '*', '*'];
+
+let rabota1 = {
+    state: 'dots',
+    array: rabota1Dots,
+
+    animationState: 'complete',
+
+    //rgb(196, 196, 196)
+    color: 196,
+    time: 777,
+
+    atan: 0,
+    shadow: 1.7,
+    currentShX: 0,
+
+    animation(toState) {
+        if (this.animationState == 'complete' && toState != this.state) {
+            if ((this.state == 'letters' && layers.length <= 1) || (this.state == 'dots')) {
+                this.changeAnimationState();
+                toState == 'dots' ? this.array = rabota1Dots : this.array = rabota1Letters;
+
+                nodeLetters.forEach((letter, i = 0) => {
+                    setTimeout(() => {
+                        letter.innerHTML = this.array[i];
+                        this.colorStyleAnimation(letter);
+                        this.shadowStyleAnimation();
+                        i++;
+                        if (i >= nodeLetters.length) {
+                            this.changeState();
+                            this.changeAnimationState();
+                        }
+                    }, timing(i));
+                });
+            }
+        }
+    },
+
+    colorStyleAnimation(letter) {
+        let colorStep = this.color / this.time;
+        this.state == 'dots' ? (direction = 1, localColor = this.color) : (direction = -1, localColor = 255);
+
+        const colorInterval = setInterval(() => {
+            letter.style.color = `rgb(${localColor}, ${localColor}, ${localColor})`;
+
+            localColor = localColor + colorStep * direction;
+            if (localColor <= this.color || localColor >= 255) {
+                clearInterval(colorInterval);
+            }
+        }, 3);
+    },
+
+    shadowStyleAnimation() {
+        let shadowStep = this.shadow / this.time;
+        this.state == 'dots' ? (direction = 1, this.currentShX = 0) : (direction = -1, this.currentShX = this.shadow);
+
+        const shadowInterval = setInterval(() => {
+            this.currentShX = this.currentShX + shadowStep * direction;
+            this.setShadowPosition(this.atan);
+            if (this.currentShX < 0 || this.currentShX >= this.shadow) {
+                clearInterval(shadowInterval);
+            }
+        }, 3);
+    },
+
+    setShadowPosition(atan) {
+        this.atan = atan;
+        this.cos0 = Math.cos(atan);
+        this.sin0 = Math.sin(atan);
+        this.cos1 = Math.cos(atan + Math.PI * 4 / 3);
+        this.sin1 = Math.sin(atan + Math.PI * 4 / 3);
+        this.cos2 = Math.cos(atan + Math.PI * 2 / 3);
+        this.sin2 = Math.sin(atan + Math.PI * 2 / 3);
+
+        console.log(0.7 * this.currentShX);
+
+        this.shadow0 = `${this.cos0 * this.currentShX}px ${this.sin0 * this.currentShX}px 0 rgba(255, 0, 0, ${0.33 * this.currentShX})`;
+        this.shadow1 = `${this.cos1 * this.currentShX}px ${this.sin1 * this.currentShX}px 0 rgba(0, 255, 0, ${0.33 * this.currentShX})`;
+        this.shadow2 = `${this.cos2 * this.currentShX}px ${this.sin2 * this.currentShX}px 0 rgba(0, 0, 255, ${0.33 * this.currentShX})`;
+
+        // console.log(`${this.shadow0}, ${this.shadow1}, ${this.shadow2}`);
+        nodeLetters.forEach((letter) => {
+            letter.style.textShadow = `${this.shadow0}, ${this.shadow1}, ${this.shadow2}`;
+        })
+    },
+
+    changeState() {
+        this.state == 'dots' ? this.state = 'letters' : this.state = 'dots';
+    },
+    changeAnimationState() {
+        this.animationState == 'complete' ? this.animationState = 'run' : this.animationState = 'complete';
+    },
+
+    setLettersPos() {
+        console.log('setLettersPos');
+    },
+};
 
 function timing(i) {
     return 333 * Math.pow((i + 1), 1 / 3);
 }
 
-function rabota1Ani(value) {
-    nodeLetters.forEach((letter, i = 0) => {
-        setTimeout(() => {
-            if (value == 'letters') {
-                letter.innerHTML = rabota1[i];
-                textStyleAnimation(letter);
-            } else if (value == 'dots') {
-                letter.innerHTML = '*';
-                textStyleAnimation(letter, -1);
-            }
-            i++;
-        }, timing(i));
-    });
-}
-
-function textStyleAnimation(letter, direction) {
-    if (!direction) {
-        let shadow = 0;
-        let createShadowInterval = setInterval(() => {
-            shadow = shadow + 0.1;
-            // letter.style.textShadow = `${shadow}px ${shadow}px red`;
-            letter.style.margin = `-${shadow}px ${shadow}px ${shadow}px -${shadow}px`;
-            letter.style.textShadow = `${shadow}px ${shadow}px 1px rgba(0, 0, 0, 33%)`;
-            if (shadow >= 1.7) clearInterval(createShadowInterval);
-        }, 3);
-    } else {
-        let shadow = 1.7;
-        let deleteShadowInterval = setInterval(() => {
-            shadow = shadow - 0.1;
-            letter.style.margin = `-${shadow}px ${shadow}px ${shadow}px -${shadow}px`;
-            letter.style.textShadow = `${shadow}px ${shadow}px 0 rgba(0, 0, 0, 33%)`;
-            if (shadow <= 0) {
-                clearInterval(deleteShadowInterval);
-                letter.style.margin = `0px 0px 0px 0px`;
-                letter.style.textShadow = `none`;
-            };
-        }, 3);
-    }
-
-}
-
-//Смена букв.
-let state = 'dots';
-
-function dotsToLetters(value) {
-    if (value == 'letters') {
-        rabota1Ani(value);
-        state = 'letters';
-    } else if (value == 'dots') {
-        rabota1Ani(value);
-        state = 'dots';
-    }
-}
-
+// TODO Перепиши эту функцию. делается проще
 function setMargin(obj, layer, direction) {
     let amount;
     if (direction == 'horizontal') {
@@ -317,11 +360,6 @@ function setMargin(obj, layer, direction) {
         if (obj[amount + layer] >= 0) obj[obj.colors[layer]].style['marginTop'] = -obj[amount + layer] + 'px';
         else obj[obj.colors[layer]].style.marginBottom = obj[amount + layer] + 'px';
     }
-
-    // if (direction == 'top') obj[obj.colors[layer]].style.marginTop = -Math.abs(obj[amount + layer]) + 'px';
-    // else if (direction == 'right') obj[obj.colors[layer]].style.marginRight = -Math.abs(obj[amount + layer]) + 'px';
-    // else if (direction == 'bottom') obj[obj.colors[layer]].style.marginBottom = -Math.abs(obj[amount + layer]) + 'px';
-    // else if (direction == 'left') obj[obj.colors[layer]].style.marginLeft = -Math.abs(obj[amount + layer]) + 'px';
 }
 
 class Layer {
@@ -351,16 +389,6 @@ class Layer {
         }
     }
     move() {
-        //Удаление слоя при бездействии.
-        this.inactiveDelete = setTimeout(() => {
-            if (!this.removeStart && this.sumDelta != 0 && this.sumDelta > (maxDelta / 3)) {
-                this.delete();
-                if (state == 'letters') {
-                    dotsToLetters('dots');
-                }
-            }
-        }, 333);
-
         // Управление положением слоя.
         this.deltaX = currentX - this.zeroX;
         this.deltaY = -(currentY - this.zeroY);
@@ -400,10 +428,16 @@ class Layer {
         // Удалине слоя при превышении дельты.
         if (this.sumDelta >= maxDelta) {
             this.delete();
-            if (state == 'dots') {
-                dotsToLetters('letters');
-            }
+            rabota1.animation('letters');
+            rabota1.setShadowPosition(this.atan);
         }
+
+        //Удаление слоя при бездействии.
+        this.inactiveDelete = setTimeout(() => {
+            if (!this.removeStart && this.sumDelta != 0 && this.sumDelta > (maxDelta / 3)) {
+                this.delete();
+            }
+        }, 333);
     }
     delete() {
         clearTimeout(this.inactiveDelete);
@@ -414,19 +448,19 @@ class Layer {
                 let opacityAnimation = setInterval(() => {
                     this[color].style.opacity = this.opacity + '%';
                     this.opacity--;
-                    if (this.opacity < 0) {
+                    if (this.opacity <= 0) {
                         clearInterval(opacityAnimation);
                         container.removeChild(this[color]);
                         if (!this.shifted) {
                             this.shifted = !this.shifted;
                             layers.shift();
+                            setTimeout(() => {
+                                rabota1.animation('dots');
+                            }, 777)
                         }
                     }
                 }, 7);
             }
-            setTimeout(() => {
-                if (layers.length <= 1 && state == 'letters') dotsToLetters('dots');
-            }, 777)
         }
     }
 }

@@ -46,6 +46,8 @@ ul {
 li {
     display: inline;
     width: 25%;
+    color: rgb(196, 196, 196);
+    mix-blend-mode: screen;
 }
 
 .goddess {
@@ -57,7 +59,7 @@ svg {
     vertical-align: top;
     width: 100%;
     height: auto;
-    mix-blend-mode: screen; 
+    mix-blend-mode: screen;
     /* mix-blend-mode: normal; */
 
     /* isolation: isolate; */
