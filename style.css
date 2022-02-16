@@ -4,6 +4,8 @@ body {
     width: 100%;
     height: 100vh;
     display: flex;
+    background-color: white;
+    margin: 0;
 }
 
 .content {
@@ -11,9 +13,7 @@ body {
     overflow: hidden;
     display: flex;
     width: 100%;
-    height: 100vh;
-    /* max-width: 1080px;
-    max-height: 1080px; */
+    height: 100%;
     margin: auto;
     justify-content: center;
     align-items: center;
@@ -24,13 +24,13 @@ body {
     align-items: center;
     justify-content: center;
     width: 512px;
-    height: 512px;
     margin: auto;
+    isolation: isolate;
 }
 
 .text-container {
     width: 9%;
-    font-family: 'Roboto Mono', "Courier New", monospace;
+    font-family: "IBM Plex Mono","Courier New","Courier",monospace;
     font-size: 3vw;
     color: #1c1c1c;
     margin-top: 47%;
@@ -41,6 +41,8 @@ ul {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    width: 100%;
+    padding: 0;
 }
 
 li {
@@ -53,42 +55,15 @@ li {
 .goddess {
     position: absolute;
     max-width: 77%;
+    mix-blend-mode: screen;
 }
 
 svg {
     vertical-align: top;
     width: 100%;
     height: auto;
-    mix-blend-mode: screen;
-    /* mix-blend-mode: normal; */
-
-    /* isolation: isolate; */
 }
 
-/* .st1 {
-    fill: none;
-    stroke: #FF00FF;
-    stroke-miterlimit: 10;
-}
-.st2 {
-    fill: #FF00FF;
-}
-.st3 {
-    fill: none;
-    stroke: #00FFFF;
-    stroke-miterlimit: 10;
-}
-.st4 {
-    fill: #00FFFF;
-}
-.st5 {
-    fill: none;
-    stroke: #FFFF00;
-    stroke-miterlimit: 10;
-}
-.st6 {
-    fill: #FFFF00;
-} */
 @media screen and (min-width: 512px) {
     .text-container {
         font-size: 17px;
