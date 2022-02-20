@@ -368,14 +368,14 @@ class Layer {
     }
     move() {
         // Управление положением слоя.
-        this.deltaX = currentX - this.zeroX;
-        this.deltaY = -(currentY - this.zeroY);
+        this.deltaX = this.zeroX - currentX;
+        this.deltaY = this.zeroY - currentY;
         this.sumDelta = Math.sqrt(this.deltaX ** 2 + this.deltaY ** 2);
         this.atan = Math.atan2(this.deltaY, this.deltaX);
 
-        if (this.sumDelta < (maxDelta * 7)) {
-            this.cosAlpha0 = Math.cos(this.atan);
-            this.sinAlpha0 = Math.sin(this.atan);
+        if (this.sumDelta < (maxDelta * 3)) {
+            this.cosAlpha0 = Math.cos(this.atan + Math.PI * 2);
+            this.sinAlpha0 = Math.sin(this.atan + Math.PI * 2);
 
             this.cosAlpha1 = Math.cos(this.atan + Math.PI * 4 / 3);
             this.sinAlpha1 = Math.sin(this.atan + Math.PI * 4 / 3);
@@ -396,7 +396,7 @@ class Layer {
         }
 
         // Удалине слоя при превышении дельты.
-        if (this.sumDelta >= maxDelta) {
+        if (this.sumDelta >= maxDelta / 3) {
             this.delete();
             rabota1.animation('letters');
             rabota1.setShadowPosition(this.atan);
@@ -404,7 +404,7 @@ class Layer {
 
         //Удаление слоя при бездействии.
         this.inactiveDelete = setTimeout(() => {
-            if (!this.removeStart && this.sumDelta != 0 && this.sumDelta > (maxDelta / 3)) {
+            if (!this.removeStart && this.sumDelta != 0 && this.sumDelta > (maxDelta / 7)) {
                 this.delete();
             }
         }, 333);
@@ -438,7 +438,7 @@ class Layer {
                             }, 777)
                         }
                     }
-                }, 7);
+                }, 3);
             }
         }
     }
@@ -462,8 +462,8 @@ function setZeroPoints(event) {
 
 function handleOrientation(event) {
     if (event.gamma || event.beta) {
-        currentX = Math.abs(event.gamma);
-        currentY = Math.abs(event.beta - 90);
+        currentX = event.gamma;
+        currentY = event.beta - 90;
 
     } else {
         currentX = event.clientX / mouseSensivity;
@@ -477,11 +477,13 @@ function handleOrientation(event) {
 
 layers = [new Layer];
 
-window.addEventListener('mousemove', setZeroPoints);
-window.addEventListener('mousemove', handleOrientation);
+if (!navigator.platform.toLowerCase().includes('mac') && !['iphone', 'ipad', 'ipod', 'ipod touch'].includes(navigator.platform.toLowerCase())) {
+    window.addEventListener('mousemove', setZeroPoints);
+    window.addEventListener('mousemove', handleOrientation);
 
-window.addEventListener('deviceorientation', setZeroPoints);
-window.addEventListener('deviceorientation', handleOrientation);
+    window.addEventListener('deviceorientation', setZeroPoints);    
+    window.addEventListener('deviceorientation', handleOrientation);
+}
 
 console.log('EffectivnayaRabota1!')
 // Кирилл Иванов 16.02.2022 Москва.

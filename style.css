@@ -31,6 +31,7 @@ body {
 .text-container {
     width: 9%;
     font-family: "IBM Plex Mono","Courier New","Courier",monospace;
+    font-weight: bold;
     font-size: 3vw;
     color: #1c1c1c;
     margin-top: 47%;
