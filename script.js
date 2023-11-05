@@ -1,3 +1,11 @@
+window.addEventListener("mousemove", setZeroPoints);
+window.addEventListener("mousemove", handleOrientation);
+
+if (window.DeviceOrientationEvent) {
+  window.addEventListener("deviceorientation", setZeroPoints);
+  window.addEventListener("deviceorientation", handleOrientation);
+}
+
 const content = document.querySelector(".content");
 const container = document.querySelector(".card-element");
 
@@ -6,9 +14,9 @@ preview.remove();
 
 const nodeLetters = document.querySelectorAll(".letter");
 
-const maxDelta = (container.offsetWidth * 0.048828125) / 3;
+const maxDelta = (container.offsetWidth * 0.048828125) / 8;
 const sensivity = 1;
-const mouseSensivity = 12;
+const mouseSensivity = 120;
 ``;
 let layers = [];
 
@@ -277,7 +285,7 @@ class Layer {
     }
 
     // Удалине слоя при превышении дельты.
-    if (this.sumDelta >= maxDelta / 4) {
+    if (this.sumDelta >= maxDelta / 8) {
       this.delete();
     }
 
@@ -286,7 +294,7 @@ class Layer {
       if (
         !this.removeStart &&
         this.sumDelta != 0 &&
-        this.sumDelta > maxDelta / 8
+        this.sumDelta >= maxDelta
       ) {
         this.delete();
       }
@@ -321,7 +329,7 @@ class Layer {
               layers.shift();
             }
           }
-        }, 3);
+        }, 1);
       }
     }
   }
@@ -358,14 +366,6 @@ function handleOrientation(event) {
 }
 
 layers = [new Layer()];
-
-window.addEventListener("mousemove", setZeroPoints);
-window.addEventListener("mousemove", handleOrientation);
-
-if (window.DeviceOrientationEvent) {
-  window.addEventListener("deviceorientation", setZeroPoints);
-  window.addEventListener("deviceorientation", handleOrientation);
-}
 
 console.log("EffectivnayaRabota1!");
 // Кирилл Иванов 16.02.2022 Москва.
