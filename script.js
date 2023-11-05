@@ -1,18 +1,50 @@
-window.addEventListener("mousemove", setZeroPoints);
-window.addEventListener("mousemove", handleOrientation);
+const container = document.querySelector(".card-element");
 
-if (window.DeviceOrientationEvent) {
+window.addEventListener("load", () => {
+  if (window.DeviceOrientationEvent) {
+    // if (true) {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+      const request = document.createElement("h5");
+      const text = document.createTextNode(
+        "для вашего устройства требуется разрешение получения информации с датчика положения. нажмите на изображение, чтобы разрешить."
+      );
+      request.appendChild(text);
+      request.style.maxWidth = "512px";
+      request.style.zIndex = "1";
+      request.style.textTransform = "uppercase";
+      container.appendChild(request);
+
+      function handlerClickPermission() {
+        DeviceOrientationEvent.requestPermission().then((permissionState) => {
+          if (permissionState === "granted") {
+            request.remove();
+            container.removeEventListener("click", handlerClickPermission);
+            initMobile();
+          }
+        });
+      }
+
+      container.addEventListener("click", handlerClickPermission);
+    } else {
+      initMobile();
+    }
+  }
+});
+
+async function initCommon() {
+  console.log("init");
+  const preview = document.querySelector(".card-element__img-container");
+  preview.remove();
+
+  window.addEventListener("mousemove", setZeroPoints);
+  window.addEventListener("mousemove", handleOrientation);
+}
+
+async function initMobile() {
+  await initCommon();
   window.addEventListener("deviceorientation", setZeroPoints);
   window.addEventListener("deviceorientation", handleOrientation);
 }
-
-const content = document.querySelector(".content");
-const container = document.querySelector(".card-element");
-
-const preview = document.querySelector(".card-element__img-container");
-preview.remove();
-
-const nodeLetters = document.querySelectorAll(".letter");
 
 const maxDelta = (container.offsetWidth * 0.048828125) / 8;
 const sensivity = 1;
@@ -314,7 +346,7 @@ class Layer {
   }
   delete() {
     clearTimeout(this.inactiveDelete);
-    if (!this.removeStart && layers.length <= 3) {
+    if (!this.removeStart && layers.length <= 2) {
       createNewLayer();
       this.removeStart = true;
       for (let color of this.colors) {
