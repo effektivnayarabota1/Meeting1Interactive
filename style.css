@@ -1,80 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-
-body {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    background-color: white;
-    margin: 0;
-}
-
 .content {
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    justify-content: center;
-    align-items: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
 }
 
-.img-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 512px;
-    margin: auto;
-    isolation: isolate;
+.card-element {
+  width: 100%;
+  height: 512px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  isolation: isolate;
 }
 
 .text-container {
-    width: 9%;
-    font-family: "IBM Plex Mono","Courier New","Courier",monospace;
-    font-weight: bold;
-    font-size: 3vw;
-    color: #1c1c1c;
-    margin-top: 47%;
-    transform: rotate(40deg);
+  width: 9%;
+  font-family: "IBM Plex Mono", "Courier New", "Courier", monospace;
+  font-weight: bold;
+  font-size: 3vw;
+  color: #1c1c1c;
+  margin-top: 47%;
+  transform: rotate(40deg);
 }
 
 ul {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
 }
 
 li {
-    display: inline;
-    width: 25%;
-    color: rgb(196, 196, 196);
-    mix-blend-mode: screen;
+  display: inline;
+  width: 25%;
+  color: rgb(196, 196, 196);
+  mix-blend-mode: screen;
 }
 
 .goddess {
-    position: absolute;
-    max-width: 77%;
-    mix-blend-mode: screen;
+  position: absolute;
+  max-width: 77%;
+  mix-blend-mode: screen;
 }
 
 svg {
-    vertical-align: top;
-    width: 100%;
-    height: auto;
+  vertical-align: top;
+  width: 100%;
+  height: auto;
 }
 
-@media screen and (min-width: 512px) {
-    .text-container {
-        font-size: 17px;
-        margin-top: 47vw;
-    }
+svg path {
+  color: inherit;
 }
 
-@media screen and (min-width: calc(512px / 0.77)) {
-    .text-container {
-        font-size: 18px;
-        margin-top: 59%;
-    }
-}
