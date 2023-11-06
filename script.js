@@ -1,4 +1,8 @@
 const container = document.querySelector(".card-element");
+const div = document.createElement("div");
+div.className = "goddes__container";
+div.style.position = "relative";
+container.prepend(div);
 
 window.addEventListener("load", () => {
   if (window.DeviceOrientationEvent) {
@@ -12,7 +16,7 @@ window.addEventListener("load", () => {
       request.style.maxWidth = "512px";
       request.style.zIndex = "1";
       request.style.textTransform = "uppercase";
-      container.appendChild(request);
+      div.appendChild(request);
 
       function handlerClickPermission() {
         DeviceOrientationEvent.requestPermission().then((permissionState) => {
@@ -284,7 +288,7 @@ class Layer {
       this[color] = document.createElement("div");
       this[color].className = "goddess h" + Math.floor(color);
       this[color].innerHTML = createVector(color);
-      container.appendChild(this[color]);
+      div.appendChild(this[color]);
     }
   }
   move() {
@@ -355,7 +359,7 @@ class Layer {
           this.opacity--;
           if (this.opacity <= 0) {
             clearInterval(opacityAnimation);
-            container.removeChild(this[color]);
+            div.removeChild(this[color]);
             if (!this.shifted) {
               this.shifted = !this.shifted;
               layers.shift();
@@ -401,4 +405,3 @@ layers = [new Layer()];
 
 console.log("EffectivnayaRabota1!");
 // Кирилл Иванов 16.02.2022 Москва.
-

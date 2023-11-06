@@ -9,45 +9,17 @@
   align-items: center;
 }
 
-.card-element {
+.goddes__container {
   width: 100%;
-  height: 512px;
-
-  display: flex;
+  max-width: 512px;
+  aspect-ratio: 1/1;
   align-items: center;
   justify-content: center;
-  margin: auto;
-  isolation: isolate;
-}
-
-.text-container {
-  width: 9%;
-  font-family: "IBM Plex Mono", "Courier New", "Courier", monospace;
-  font-weight: bold;
-  font-size: 3vw;
-  color: #1c1c1c;
-  margin-top: 47%;
-  transform: rotate(40deg);
-}
-
-ul {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0;
-}
-
-li {
-  display: inline;
-  width: 25%;
-  color: rgb(196, 196, 196);
-  mix-blend-mode: screen;
 }
 
 .goddess {
   position: absolute;
-  max-width: 77%;
+  max-width: 100%;
   mix-blend-mode: screen;
 }
 
@@ -60,4 +32,3 @@ svg {
 svg path {
   color: inherit;
 }
-
